@@ -18,10 +18,10 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import os, sys, unittest
+import os
 from unittest import TestCase
 
-import inotifyx
+import pynotifyx
 
 from tests.manager import manager
 
@@ -34,11 +34,11 @@ class TestInotifyx(TestCase):
     def setUp(self):
         self.workdir = os.path.abspath(os.getcwd())
         self.testdir = os.path.abspath(
-          os.path.join(os.path.dirname(__file__), 'test')
+            os.path.join(os.path.dirname(__file__), 'test')
         )
         os.mkdir(self.testdir)
         os.chdir(self.testdir)
-        self.fd = inotifyx.init()
+        self.fd = pynotifyx.init()
 
     def tearDown(self):
         os.close(self.fd)
@@ -48,7 +48,7 @@ class TestInotifyx(TestCase):
         os.chdir(self.workdir)
         del self.workdir
 
-    def _create_file(self, path, content = ''):
+    def _create_file(self, path, content=''):
         f = open(path, 'w')
         try:
             f.write(content)
@@ -56,12 +56,12 @@ class TestInotifyx(TestCase):
             f.close()
 
     def test_file_create(self):
-        inotifyx.add_watch(self.fd, self.testdir, inotifyx.IN_CREATE)
+        pynotifyx.add_watch(self.fd, self.testdir, pynotifyx.IN_CREATE)
         self._create_file('foo')
         try:
-            events = inotifyx.get_events(self.fd)
+            events = pynotifyx.get_events(self.fd)
             self.assertEqual(len(events), 1)
-            self.assertEqual(events[0].mask, inotifyx.IN_CREATE)
+            self.assertEqual(events[0].mask, pynotifyx.IN_CREATE)
             self.assertEqual(events[0].name, 'foo')
         finally:
             os.unlink('foo')
@@ -69,19 +69,19 @@ class TestInotifyx(TestCase):
     def test_file_remove(self):
         self._create_file('foo')
         try:
-            inotifyx.add_watch(self.fd, self.testdir, inotifyx.IN_DELETE)
+            pynotifyx.add_watch(self.fd, self.testdir, pynotifyx.IN_DELETE)
         except:
             os.unlink('foo')
             raise
         os.unlink('foo')
-        events = inotifyx.get_events(self.fd)
+        events = pynotifyx.get_events(self.fd)
         self.assertEqual(len(events), 1)
-        self.assertEqual(events[0].mask, inotifyx.IN_DELETE)
+        self.assertEqual(events[0].mask, pynotifyx.IN_DELETE)
         self.assertEqual(events[0].name, 'foo')
 
     def test_version_attribute(self):
-        from inotifyx import distinfo
-        self.assertEqual(inotifyx.__version__, distinfo.version)
+        from pynotifyx import distinfo
+        self.assertEqual(pynotifyx.__version__, distinfo.version)
 
 
 manager.add_test_case_class(TestInotifyx)

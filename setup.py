@@ -3,10 +3,12 @@
 # Author: Forest Bond
 # This file is in the public domain.
 
-from distutils.core import Extension
+
 import os
 import subprocess
 import sys
+
+from setuptools import Extension
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'modules'))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
@@ -33,23 +35,23 @@ def get_version(release_file):
 version = get_version('release')
 
 setup(
-    name='pynotify',
-    distinfo_module='inotifyx.distinfo',
+    name='pynotifyx',
+    distinfo_module='pynotifyx.distinfo',
     version=version,
     description='Simple Linux inotify bindings',
-    author='Forest Bond',
-    author_email='forest@forestbond.com',
-    url='https://launchpad.net/inotifyx/',
-    packages=['inotifyx'],
+    author='Joe Isca',
+    author_email='joeisca@gmail.com',
+    url='https://github.com/joeisca/pynotifyx/',
+    packages=['pynotifyx'],
     entry_points={
         "console_scripts": [
-            "pynotify=inotifyx:main",
+            "pynotifyx=pynotifyx:main",
         ]
     },
     ext_modules=[
         Extension(
-            'inotifyx.binding',
-            sources=[os.path.join('inotifyx', 'binding.c')],
+            'pynotifyx.binding',
+            sources=[os.path.join('pynotifyx', 'binding.c')],
         ),
     ],
 )

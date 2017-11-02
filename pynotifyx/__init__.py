@@ -20,7 +20,7 @@
 # DEALINGS IN THE SOFTWARE.
 
 '''
-inotifyx is a simple Python binding to the Linux inotify file system event
+pynotifyx is a simple Python binding to the Linux inotify file system event
 monitoring API.
 
 Generally, usage is as follows:
@@ -36,7 +36,7 @@ Generally, usage is as follows:
 
 import os
 
-from inotifyx import binding
+from pynotifyx import binding
 
 
 constants = {}
@@ -89,7 +89,7 @@ class InotifyEvent(object):
         that could be eval'd to get the value of the mask field.  In other
         words, for a given event:
 
-        >>> from inotifyx import *
+        >>> from pynotifyx import *
         >>> assert (event.mask == eval(event.get_mask_description()))
         '''
 

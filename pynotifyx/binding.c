@@ -46,7 +46,7 @@
 #define BUF_LEN (1024 * (EVENT_SIZE + 16))
 
 
-static PyObject * inotifyx_init(PyObject *self, PyObject *args) {
+static PyObject * pynotifyx_init(PyObject *self, PyObject *args) {
     int fd;
 
     Py_BEGIN_ALLOW_THREADS;
@@ -61,7 +61,7 @@ static PyObject * inotifyx_init(PyObject *self, PyObject *args) {
 }
 
 
-static PyObject * inotifyx_add_watch(PyObject *self, PyObject *args) {
+static PyObject * pynotifyx_add_watch(PyObject *self, PyObject *args) {
     int fd;
     char *path;
     int watch_descriptor;
@@ -85,7 +85,7 @@ static PyObject * inotifyx_add_watch(PyObject *self, PyObject *args) {
 }
 
 
-static PyObject * inotifyx_rm_watch(PyObject *self, PyObject *args) {
+static PyObject * pynotifyx_rm_watch(PyObject *self, PyObject *args) {
     int fd;
     int watch_descriptor;
     int retvalue;
@@ -106,7 +106,7 @@ static PyObject * inotifyx_rm_watch(PyObject *self, PyObject *args) {
 }
 
 
-static PyObject * inotifyx_get_events(PyObject *self, PyObject *args) {
+static PyObject * pynotifyx_get_events(PyObject *self, PyObject *args) {
     int fd;
 
     static char buf[BUF_LEN];
@@ -224,7 +224,7 @@ static PyObject * inotifyx_get_events(PyObject *self, PyObject *args) {
 static PyMethodDef InotifyMethods[] = {
   {
     "init",
-    inotifyx_init,
+    pynotifyx_init,
     METH_VARARGS,
     (
       "init()\n\n"
@@ -235,7 +235,7 @@ static PyMethodDef InotifyMethods[] = {
   },
   {
     "add_watch",
-    inotifyx_add_watch,
+    pynotifyx_add_watch,
     METH_VARARGS,
     (
       "add_watch(fd, path[, mask])\n\n"
@@ -247,7 +247,7 @@ static PyMethodDef InotifyMethods[] = {
   },
   {
     "rm_watch",
-    inotifyx_rm_watch,
+    pynotifyx_rm_watch,
     METH_VARARGS,
     (
       "rm_watch(fd, wd)\n\n"
@@ -257,7 +257,7 @@ static PyMethodDef InotifyMethods[] = {
   },
   {
     "get_events",
-    inotifyx_get_events,
+    pynotifyx_get_events,
     METH_VARARGS,
     "get_events(fd[, timeout])\n\n"
     "Read events from inotify and return a list of tuples "
@@ -274,9 +274,9 @@ static PyMethodDef InotifyMethods[] = {
 #if PY_MAJOR_VERSION >= 3
     static struct PyModuleDef moduledef = {
         PyModuleDef_HEAD_INIT,
-        "inotifyx.binding",  /* m_name */
+        "pynotifyx.binding",  /* m_name */
         "Low-level interface to inotify.  Do not use this module directly.\n"
-        "Instead, use the inotifyx module.",     /* m_doc */
+        "Instead, use the pynotifyx module.",     /* m_doc */
         -1,                  /* m_size */
         InotifyMethods,      /* m_methods */
         NULL,                /* m_reload */
@@ -292,11 +292,11 @@ static PyMethodDef InotifyMethods[] = {
 #else
     PyMODINIT_FUNC initbinding(void) {
         PyObject* module = Py_InitModule3(
-          "inotifyx.binding",
+          "pynotifyx.binding",
           InotifyMethods,
           (
             "Low-level interface to inotify.  Do not use this module directly.\n"
-            "Instead, use the inotifyx module."
+            "Instead, use the pynotifyx module."
           )
         );
 

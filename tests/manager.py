@@ -18,9 +18,12 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import os, sys, glob, inspect
 from doctest import DocTestCase, DocTestFinder, DocTestParser
-from unittest import TestSuite, TextTestRunner, TestLoader
+import glob
+import inspect
+import os
+import sys
+from unittest import TestLoader, TestSuite, TextTestRunner
 
 
 class ListTestLoader(TestLoader):
@@ -51,26 +54,26 @@ class TestManager(object):
         for name in dir(package):
             value = getattr(package, name)
             if (inspect.ismodule(value)) and (
-              value.__name__.rpartition('.')[0] == package.__name__):
+                    value.__name__.rpartition('.')[0] == package.__name__):
                 modules.extend(self.find_modules(value))
         return modules
 
-    def main(self, test_names = None, print_only = False, coverage = False):
+    def main(self, test_names=None, print_only=False, coverage=False):
         result = self.run(
-          test_names = test_names,
-          print_only = print_only,
-          coverage = coverage,
+            test_names=test_names,
+            print_only=print_only,
+            coverage=coverage,
         )
 
         if (not print_only) and (not result.wasSuccessful()):
             sys.exit(1)
         sys.exit(0)
 
-    def run(self, test_names = None, print_only = False, coverage = False):
-        if 'inotifyx' in sys.modules:
+    def run(self, test_names=None, print_only=False, coverage=False):
+        if 'pynotifyx' in sys.modules:
             raise AssertionError(
-              'inotifyx already imported; '
-              'this interferes with coverage analysis'
+                'pynotifyx already imported; '
+                'this interferes with coverage analysis'
             )
 
         if coverage:
@@ -78,7 +81,7 @@ class TestManager(object):
 
             if int(_coverage.__version__.split('.')[0]) < 3:
                 sys.stderr.write('warning: coverage versions < 3 ' +
-                    'are known to produce imperfect results\n')
+                                 'are known to produce imperfect results\n')
 
             _coverage.use_cache(False)
             _coverage.start()
@@ -87,7 +90,7 @@ class TestManager(object):
             self.load()
 
             suite = TestSuite()
-            runner = TextTestRunner(verbosity = 2)
+            runner = TextTestRunner(verbosity=2)
 
             for test in self.tests:
                 if self.should_run_test(test, test_names):
@@ -102,8 +105,8 @@ class TestManager(object):
         finally:
             if coverage:
                 _coverage.stop()
-                import inotifyx
-                _coverage.report(self.find_modules(inotifyx))
+                import pynotifyx
+                _coverage.report(self.find_modules(pynotifyx))
 
     def should_run_test(self, test, test_names):
         if test_names is None:
@@ -131,23 +134,23 @@ class TestManager(object):
 
     def add_test_case_class(self, test_case_class):
         self.tests.extend(
-          self.loader.loadTestsFromTestCase(test_case_class))
+            self.loader.loadTestsFromTestCase(test_case_class))
 
     def make_doc_test_case(self, test):
         def __init__(self, *args, **kwargs):
             DocTestCase.__init__(self, test)
         return type(
-          '%s_TestCase' % test.name.split('.')[-1],
-          (DocTestCase,),
-          {'__init__': __init__},
+            '%s_TestCase' % test.name.split('.')[-1],
+            (DocTestCase,),
+            {'__init__': __init__},
         )
 
     def get_doc_test_cases_from_string(
-      self,
-      string,
-      name = '<string>',
-      filename = '<string>',
-      globs = None,
+        self,
+        string,
+        name='<string>',
+        filename='<string>',
+        globs=None,
     ):
         if globs is None:
             globs = {}
@@ -158,11 +161,11 @@ class TestManager(object):
 
         parser = DocTestParser()
         test = parser.get_doctest(
-          string,
-          globs = globs,
-          name = name,
-          filename = filename,
-          lineno = 0,
+            string,
+            globs=globs,
+            name=name,
+            filename=filename,
+            lineno=0,
         )
         test_case = self.make_doc_test_case(test)
         return [test_case]
@@ -192,7 +195,7 @@ class TestManager(object):
             doc_test_cases.append(self.make_doc_test_case(test))
         return doc_test_cases
 
-    def add_doc_test_cases_from_module(self, dst_name, src_name = None):
+    def add_doc_test_cases_from_module(self, dst_name, src_name=None):
         if src_name is None:
             src_name = dst_name
 
@@ -211,8 +214,8 @@ class TestManager(object):
 
     def add_doc_test_cases_from_text_file(self, *args, **kwargs):
         for test_case in self.get_doc_test_cases_from_text_file(
-          *args,
-          **kwargs
+            *args,
+            **kwargs
         ):
             self.add_test_case_class(test_case)
 

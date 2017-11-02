@@ -18,7 +18,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import glob, os
+import glob
+import os
 
 
 def get_test_modules():
@@ -44,6 +45,6 @@ def main(**kwargs):
     manager.main(**kwargs)
 
 
-def print_names(test_names = None):
+def print_names(test_names=None):
     from tests.manager import manager
     print('\n'.join(manager.get_names(test_names)))
