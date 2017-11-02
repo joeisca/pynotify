@@ -9,11 +9,6 @@ from distutils.command.clean import clean as _clean
 from distutils.command.install import install
 from distutils.command.install_data import install_data as _install_data
 from distutils.command.install_lib import install_lib as _install_lib
-from distutils.core import (
-    Command,
-    setup as _setup,
-
-)
 from distutils.dir_util import remove_tree
 from distutils.dist import Distribution
 from distutils.spawn import spawn
@@ -23,6 +18,11 @@ import shutil
 import sys
 from tempfile import mkdtemp
 
+from setuptools import (
+    Command,
+    setup as _setup,
+
+)
 
 try:
     from py2exe.build_exe import py2exe as _py2exe
