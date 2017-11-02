@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: pynotifyx
-Version: 0.3.0
+Version: 0.3.1
 Summary: Simple Linux inotify bindings
 Home-page: https://github.com/joeisca/pynotifyx
 Author: Joe Isca
