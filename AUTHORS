@@ -1,8 +1,13 @@
 Current authors:
 
+Joe Isca <joeisca@gmail.com>
+Andrew Fullford <git042013@fullford.com>
+
+pynotify is a derived work, based on inotifyx.  inotifyx was
+extended with support for python3 and was written by:
+
 Forest Bond <forest@forestbond.com>
 Henry Stern <henry@stern.ca>
-
 
 inotifyx is a derived work, based on the following:
 
