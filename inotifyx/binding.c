@@ -271,6 +271,25 @@ static PyMethodDef InotifyMethods[] = {
 };
 
 
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "inotifyx.binding",  /* m_name */
+    "Low-level interface to inotify.  Do not use this module directly.\n"
+    "Instead, use the inotifyx module.",     /* m_doc */
+    -1,                  /* m_size */
+    InotifyMethods,      /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+};
+PyMODINIT_FUNC PyInit_binding(void) {
+    PyObject* module = PyModule_Create(&moduledef);
+
+    if (module == NULL)
+        return NULL;
+#else
 PyMODINIT_FUNC initbinding(void) {
     PyObject* module = Py_InitModule3(
       "inotifyx.binding",
@@ -283,7 +302,9 @@ PyMODINIT_FUNC initbinding(void) {
 
     if (module == NULL)
         return;
-    
+
+#endif /* else PY_MAJOR_VERSION >= 3 */
+
     PyModule_AddIntConstant(module, "IN_ACCESS", IN_ACCESS);
     PyModule_AddIntConstant(module, "IN_MODIFY", IN_MODIFY);
     PyModule_AddIntConstant(module, "IN_ATTRIB", IN_ATTRIB);
@@ -307,4 +328,7 @@ PyMODINIT_FUNC initbinding(void) {
     PyModule_AddIntConstant(module, "IN_ISDIR", IN_ISDIR);
     PyModule_AddIntConstant(module, "IN_ONESHOT", IN_ONESHOT);
     PyModule_AddIntConstant(module, "IN_ALL_EVENTS", IN_ALL_EVENTS);
+#if PY_MAJOR_VERSION >= 3
+    return module;
+#endif
 }

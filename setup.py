@@ -3,7 +3,7 @@
 # Author: Forest Bond
 # This file is in the public domain.
 
-import os, sys, commands
+import os, sys, subprocess
 from distutils.core import Extension
 
 
@@ -22,9 +22,11 @@ def get_version(release_file):
         finally:
             f.close()
     except (IOError, OSError):
-        status, output = commands.getstatusoutput('bzr revno')
-        if status == 0:
-            return 'bzr%s' % output.strip()
+        try:
+            output = subprocess.check_output(['bzr', 'revno'])
+            return 'bzr' + output.strip()
+        except:
+            pass
     return 'unknown'
 
 
