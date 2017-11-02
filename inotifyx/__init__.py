@@ -34,10 +34,9 @@ Generally, usage is as follows:
 ...     os.close(fd)
 '''
 
-import os, select
+import os
 
 from inotifyx import binding
-from inotifyx.distinfo import version as __version__
 
 
 constants = {}
@@ -76,11 +75,11 @@ class InotifyEvent(object):
 
     def __repr__(self):
         return '%s(%s, %s, %s, %s)' % (
-          self.__class__.__name__,
-          repr(self.wd),
-          repr(self.mask),
-          repr(self.cookie),
-          repr(self.name),
+            self.__class__.__name__,
+            repr(self.wd),
+            repr(self.mask),
+            repr(self.cookie),
+            repr(self.name),
         )
 
     def get_mask_description(self):
@@ -115,16 +114,16 @@ def get_events(fd, *args):
     will not block.
     '''
     return [
-      InotifyEvent(wd, mask, cookie, name)
-      for wd, mask, cookie, name in binding.get_events(fd, *args)
+        InotifyEvent(wd, mask, cookie, name)
+        for wd, mask, cookie, name in binding.get_events(fd, *args)
     ]
 
 
-if __name__ == '__main__':
+def main():
     import sys
 
     if len(sys.argv) == 1:
-        sys.stderr.write("usage: inotify path [path ...]\n")
+        sys.stderr.write("usage: %s path [path ...]\n" % (sys.argv[0]))
         sys.exit(1)
 
     paths = sys.argv[1:]
@@ -152,3 +151,7 @@ if __name__ == '__main__':
 
     finally:
         os.close(fd)
+
+
+if __name__ == '__main__':
+    main()

@@ -272,36 +272,36 @@ static PyMethodDef InotifyMethods[] = {
 
 
 #if PY_MAJOR_VERSION >= 3
-static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "inotifyx.binding",  /* m_name */
-    "Low-level interface to inotify.  Do not use this module directly.\n"
-    "Instead, use the inotifyx module.",     /* m_doc */
-    -1,                  /* m_size */
-    InotifyMethods,      /* m_methods */
-    NULL,                /* m_reload */
-    NULL,                /* m_traverse */
-    NULL,                /* m_clear */
-    NULL,                /* m_free */
-};
-PyMODINIT_FUNC PyInit_binding(void) {
-    PyObject* module = PyModule_Create(&moduledef);
-
-    if (module == NULL)
-        return NULL;
-#else
-PyMODINIT_FUNC initbinding(void) {
-    PyObject* module = Py_InitModule3(
-      "inotifyx.binding",
-      InotifyMethods,
-      (
+    static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "inotifyx.binding",  /* m_name */
         "Low-level interface to inotify.  Do not use this module directly.\n"
-        "Instead, use the inotifyx module."
-      )
-    );
+        "Instead, use the inotifyx module.",     /* m_doc */
+        -1,                  /* m_size */
+        InotifyMethods,      /* m_methods */
+        NULL,                /* m_reload */
+        NULL,                /* m_traverse */
+        NULL,                /* m_clear */
+        NULL,                /* m_free */
+    };
+    PyMODINIT_FUNC PyInit_binding(void) {
+        PyObject* module = PyModule_Create(&moduledef);
 
-    if (module == NULL)
-        return;
+        if (module == NULL)
+            return NULL;
+#else
+    PyMODINIT_FUNC initbinding(void) {
+        PyObject* module = Py_InitModule3(
+          "inotifyx.binding",
+          InotifyMethods,
+          (
+            "Low-level interface to inotify.  Do not use this module directly.\n"
+            "Instead, use the inotifyx module."
+          )
+        );
+
+        if (module == NULL)
+            return;
 
 #endif /* else PY_MAJOR_VERSION >= 3 */
 

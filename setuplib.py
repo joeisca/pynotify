@@ -3,22 +3,26 @@
 
 from __future__ import with_statement
 
-import os, sys, shutil
-from tempfile import mkdtemp
-from modulefinder import Module
+from distutils import log
 from distutils.command.build import build
 from distutils.command.clean import clean as _clean
 from distutils.command.install import install
-from distutils.command.install_lib import install_lib as _install_lib
 from distutils.command.install_data import install_data as _install_data
+from distutils.command.install_lib import install_lib as _install_lib
 from distutils.core import (
-  setup as _setup,
-  Command,
+    Command,
+    setup as _setup,
+
 )
-from distutils.spawn import spawn
-from distutils import log
 from distutils.dir_util import remove_tree
 from distutils.dist import Distribution
+from distutils.spawn import spawn
+from modulefinder import Module
+import os
+import shutil
+import sys
+from tempfile import mkdtemp
+
 
 try:
     from py2exe.build_exe import py2exe as _py2exe
@@ -34,9 +38,9 @@ else:
 class test(Command):
     description = 'run tests'
     user_options = [
-      ('tests=', None, 'names of tests to run'),
-      ('print-only', None, "don't run tests, just print their names"),
-      ('coverage', None, "print coverage analysis (requires coverage.py)"),
+        ('tests=', None, 'names of tests to run'),
+        ('print-only', None, "don't run tests, just print their names"),
+        ('coverage', None, "print coverage analysis (requires coverage.py)"),
     ]
 
     def initialize_options(self):
@@ -56,9 +60,9 @@ class test(Command):
             mod = __import__(self.distribution.test_module)
             main = getattr(mod, 'main')
             main(
-              test_names = self.tests,
-              print_only = self.print_only,
-              coverage = self.coverage,
+                test_names=self.tests,
+                print_only=self.print_only,
+                coverage=self.coverage,
             )
         finally:
             sys.path.remove(build_obj.build_lib)
@@ -72,7 +76,7 @@ Distribution.test_module = 'tests'
 
 class clean(_clean):
     user_options = _clean.user_options + [
-      ('build-man=', None, 'manpage build directory'),
+        ('build-man=', None, 'manpage build directory'),
     ]
 
     def initialize_options(self):
@@ -86,11 +90,11 @@ class clean(_clean):
     def run(self):
         if self.all:
             if os.path.exists(self.build_man):
-                remove_tree(self.build_man, dry_run = self.dry_run)
+                remove_tree(self.build_man, dry_run=self.dry_run)
             else:
                 log.debug(
-                  "'%s' does not exist -- can't clean it",
-                  self.build_man,
+                    "'%s' does not exist -- can't clean it",
+                    self.build_man,
                 )
 
         _clean.run(self)
@@ -101,7 +105,7 @@ class clean(_clean):
 
 class build_man(Command):
     user_options = _install_data.user_options + [
-      ('build-dir=', 'b', 'manpage build directory'),
+        ('build-dir=', 'b', 'manpage build directory'),
     ]
     description = 'Build manual pages from docbook XML.'
 
@@ -124,15 +128,15 @@ class build_man(Command):
                     del unclaimed_files[index]
             if unclaimed_files:
                 log.error(
-                  'unknown manpage source file types: %s',
-                  ', '.join(unclaimed_files),
+                    'unknown manpage source file types: %s',
+                    ', '.join(unclaimed_files),
                 )
                 raise SystemExit(1)
 
     def _find_docbook_manpage_stylesheet(self):
         from libxml2 import catalogResolveURI
         return catalogResolveURI(
-          'http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl'
+            'http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl'
         )
 
     def build_manpage_from_docbook(self, stylesheet, docbook_file):
@@ -143,7 +147,7 @@ class build_man(Command):
         orig_wd = os.getcwd()
         os.chdir(self.build_dir)
         try:
-            spawn(command, dry_run = self.dry_run)
+            spawn(command, dry_run=self.dry_run)
         finally:
             os.chdir(orig_wd)
 
@@ -153,10 +157,10 @@ class build_man(Command):
 
             if stylesheet is None:
                 log.warn(
-                  'Warning: missing docbook XSL stylesheets; '
-                  'manpages will not be built.\n'
-                  'Please install the docbook XSL stylesheets from '
-                  'http://docbook.org/.'
+                    'Warning: missing docbook XSL stylesheets; '
+                    'manpages will not be built.\n'
+                    'Please install the docbook XSL stylesheets from '
+                    'http://docbook.org/.'
                 )
 
             else:
@@ -167,19 +171,20 @@ class build_man(Command):
                     log.info('building manpage from docbook: %s', docbook_file)
                     if not self.dry_run:
                         self.build_manpage_from_docbook(
-                          stylesheet,
-                          docbook_file,
+                            stylesheet,
+                            docbook_file,
                         )
 
 Distribution.manpage_sources = None
 
 build.sub_commands.append((
-  'build_man',
-  (lambda self: bool(self.distribution.manpage_sources)),
+    'build_man',
+    (lambda self: bool(self.distribution.manpage_sources)),
 ))
 
 
 class install_man(_install_data):
+
     def initialize_options(self):
         _install_data.initialize_options(self)
         self.build_dir = None
@@ -197,12 +202,12 @@ class install_man(_install_data):
                     base, ext = os.path.splitext(entry)
                     section = int(ext[1:])
                     self.data_files.append(
-                      ('share/man/man%u' % section, [path])
+                        ('share/man/man%u' % section, [path])
                     )
 
 install.sub_commands.append((
-  'install_man',
-  (lambda self: bool(self.distribution.manpage_sources)),
+    'install_man',
+    (lambda self: bool(self.distribution.manpage_sources)),
 ))
 
 
@@ -210,25 +215,28 @@ install.sub_commands.append((
 
 
 class _DistinfoMixin:
+
     def _split_distinfo_module(self):
         parts = self.distribution.distinfo_module.split('.')
         return parts[:-1], parts[-1]
 
     def _prepare_distinfo_string(self, value):
+        if sys.version_info > (3, 0):
+            return repr(value)
         if isinstance(value, str):
             value = u'' + value
         return u'' + repr(value).encode('utf-8')
 
-    def _write_distinfo_module(self, outfile, distinfo = (), imports = ()):
+    def _write_distinfo_module(self, outfile, distinfo=(), imports=()):
         distinfo = list(distinfo)
         imports = list(imports)
 
         distinfo.insert(
-          0,
-          (
-            'version',
-            self._prepare_distinfo_string(self.distribution.metadata.version),
-          ),
+            0,
+            (
+                'version',
+                self._prepare_distinfo_string(self.distribution.metadata.version),
+            ),
         )
 
         log.info("creating distinfo file %r:", outfile)
@@ -252,26 +260,26 @@ class _DistinfoMixin:
 
 class install_data(_install_data):
     user_options = _install_data.user_options + [
-      (
-        'install-dir-arch=',
-        None,
-        'base directory for installing architecture-dependent data files',
-      ),
-      (
-        'install-dir-arch-pkg=',
-        None,
-        'package-specific directory for installing architecture-dependent data files',
-      ),
-      (
-        'install-dir-indep=',
-        None,
-        'base directory for installing architecture-independent data files',
-      ),
-      (
-        'install-dir-indep-pkg=',
-        None,
-        'package-specific directory for installing architecture-independent data files',
-      ),
+        (
+            'install-dir-arch=',
+            None,
+            'base directory for installing architecture-dependent data files',
+        ),
+        (
+            'install-dir-arch-pkg=',
+            None,
+            'package-specific directory for installing architecture-dependent data files',
+        ),
+        (
+            'install-dir-indep=',
+            None,
+            'base directory for installing architecture-independent data files',
+        ),
+        (
+            'install-dir-indep-pkg=',
+            None,
+            'package-specific directory for installing architecture-independent data files',
+        ),
     ]
 
     def initialize_options(self):
@@ -298,7 +306,7 @@ class install_data(_install_data):
             py2exe_obj.ensure_finalized()
 
         if (py2exe_obj is not None) and (
-          self.install_dir == py2exe_obj.dist_dir
+            self.install_dir == py2exe_obj.dist_dir
         ):
             self.install_dir_arch = self.install_dir
             self.install_dir_arch_pkg = self.install_dir
@@ -314,8 +322,8 @@ class install_data(_install_data):
 
             if self.install_dir_arch_pkg is None:
                 self.install_dir_arch_pkg = os.path.join(
-                  self.install_dir_arch,
-                  self.distribution.metadata.name,
+                    self.install_dir_arch,
+                    self.distribution.metadata.name,
                 )
 
             if self.install_dir_indep is None:
@@ -326,8 +334,8 @@ class install_data(_install_data):
 
             if self.install_dir_indep_pkg is None:
                 self.install_dir_indep_pkg = os.path.join(
-                  self.install_dir_indep,
-                  self.distribution.metadata.name,
+                    self.install_dir_indep,
+                    self.distribution.metadata.name,
                 )
 
         if self.data_files is None:
@@ -335,26 +343,26 @@ class install_data(_install_data):
 
         if self.data_files_arch:
             self.data_files.extend(self._gen_data_files(
-              self._get_relative_install_dir(self.install_dir_arch),
-              self.data_files_arch,
+                self._get_relative_install_dir(self.install_dir_arch),
+                self.data_files_arch,
             ))
 
         if self.data_files_arch_pkg:
             self.data_files.extend(self._gen_data_files(
-              self._get_relative_install_dir(self.install_dir_arch_pkg),
-              self.data_files_arch_pkg,
+                self._get_relative_install_dir(self.install_dir_arch_pkg),
+                self.data_files_arch_pkg,
             ))
 
         if self.data_files_indep:
             self.data_files.extend(self._gen_data_files(
-              self._get_relative_install_dir(self.install_dir_indep),
-              self.data_files_indep,
+                self._get_relative_install_dir(self.install_dir_indep),
+                self.data_files_indep,
             ))
 
         if self.data_files_indep_pkg:
             self.data_files.extend(self._gen_data_files(
-              self._get_relative_install_dir(self.install_dir_indep_pkg),
-              self.data_files_indep_pkg,
+                self._get_relative_install_dir(self.install_dir_indep_pkg),
+                self.data_files_indep_pkg,
             ))
 
     def _gen_data_files(self, base_dir, data_files):
@@ -375,14 +383,15 @@ Distribution.data_files_indep_pkg = None
 
 orig_has_data_files = Distribution.has_data_files
 
+
 def has_data_files(self):
     if orig_has_data_files(self):
         return True
     return any([
-      self.data_files_arch,
-      self.data_files_arch_pkg,
-      self.data_files_indep,
-      self.data_files_indep_pkg,
+        self.data_files_arch,
+        self.data_files_arch_pkg,
+        self.data_files_indep,
+        self.data_files_indep_pkg,
     ])
 
 Distribution.has_data_files = has_data_files
@@ -392,6 +401,7 @@ Distribution.has_data_files = has_data_files
 
 
 class install_lib(_DistinfoMixin, _install_lib):
+
     def initialize_options(self):
         _install_lib.initialize_options(self)
 
@@ -403,7 +413,7 @@ class install_lib(_DistinfoMixin, _install_lib):
 
         if self.distribution.distinfo_module is not None:
             self.distinfo_package, self.distinfo_module = \
-              self._split_distinfo_module()
+                self._split_distinfo_module()
 
     def install(self):
         retval = _install_lib.install(self)
@@ -423,78 +433,78 @@ class install_lib(_DistinfoMixin, _install_lib):
             install_data_obj = self.get_finalized_command('install_data')
 
             distinfo = [
-              (
-                'install_base',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_obj.install_base,
-                )),
-              ),
-              (
-                'install_platbase',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_obj.install_platbase,
-                )),
-              ),
-              (
-                'install_purelib',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_obj.install_purelib,
-                )),
-              ),
-              (
-                'install_platlib',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_obj.install_platlib,
-                )),
-              ),
-              (
-                'install_lib',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_obj.install_lib,
-                )),
-              ),
-              (
-                'install_headers',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_obj.install_headers,
-                )),
-              ),
-              (
-                'install_scripts',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_obj.install_scripts,
-                )),
-              ),
-              (
-                'install_data',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_data_obj.install_dir,
-                )),
-              ),
-              (
-                'install_data_arch',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_data_obj.install_dir_arch,
-                )),
-              ),
-              (
-                'install_data_arch_pkg',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_data_obj.install_dir_arch_pkg,
-                )),
-              ),
-              (
-                'install_data_indep',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_data_obj.install_dir_indep,
-                )),
-              ),
-              (
-                'install_data_indep_pkg',
-                self._prepare_distinfo_string(os.path.abspath(
-                  install_data_obj.install_dir_indep_pkg,
-                )),
-              ),
+                (
+                    'install_base',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_obj.install_base,
+                    )),
+                ),
+                (
+                    'install_platbase',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_obj.install_platbase,
+                    )),
+                ),
+                (
+                    'install_purelib',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_obj.install_purelib,
+                    )),
+                ),
+                (
+                    'install_platlib',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_obj.install_platlib,
+                    )),
+                ),
+                (
+                    'install_lib',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_obj.install_lib,
+                    )),
+                ),
+                (
+                    'install_headers',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_obj.install_headers,
+                    )),
+                ),
+                (
+                    'install_scripts',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_obj.install_scripts,
+                    )),
+                ),
+                (
+                    'install_data',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_data_obj.install_dir,
+                    )),
+                ),
+                (
+                    'install_data_arch',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_data_obj.install_dir_arch,
+                    )),
+                ),
+                (
+                    'install_data_arch_pkg',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_data_obj.install_dir_arch_pkg,
+                    )),
+                ),
+                (
+                    'install_data_indep',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_data_obj.install_dir_indep,
+                    )),
+                ),
+                (
+                    'install_data_indep_pkg',
+                    self._prepare_distinfo_string(os.path.abspath(
+                        install_data_obj.install_dir_indep_pkg,
+                    )),
+                ),
             ]
 
             self._write_distinfo_module(installed_module_path, distinfo)
@@ -508,57 +518,58 @@ if _py2exe is None:
     py2exe = None
 else:
     class py2exe(_DistinfoMixin, _py2exe):
+
         def make_lib_archive(self, *args, **kwargs):
             if self.distribution.distinfo_module is not None:
                 imports = ['os', 'sys']
                 distinfo = [
-                  (
-                    'install_data',
-                    'os.path.dirname(sys.executable)',
-                  ),
-                  (
-                    'install_data_arch',
-                    'os.path.dirname(sys.executable)',
-                  ),
-                  (
-                    'install_data_arch_pkg',
-                    'os.path.dirname(sys.executable)',
-                  ),
-                  (
-                    'install_data_indep',
-                    'os.path.dirname(sys.executable)',
-                  ),
-                  (
-                    'install_data_indep_pkg',
-                    'os.path.dirname(sys.executable)',
-                  ),
+                    (
+                        'install_data',
+                        'os.path.dirname(sys.executable)',
+                    ),
+                    (
+                        'install_data_arch',
+                        'os.path.dirname(sys.executable)',
+                    ),
+                    (
+                        'install_data_arch_pkg',
+                        'os.path.dirname(sys.executable)',
+                    ),
+                    (
+                        'install_data_indep',
+                        'os.path.dirname(sys.executable)',
+                    ),
+                    (
+                        'install_data_indep_pkg',
+                        'os.path.dirname(sys.executable)',
+                    ),
                 ]
 
                 tmp_dir_path = mkdtemp()
                 try:
                     distinfo_package, distinfo_module = self._split_distinfo_module()
                     tmp_file_parent_path = os.path.join(
-                      tmp_dir_path,
-                      *distinfo_package
+                        tmp_dir_path,
+                        *distinfo_package
                     )
                     os.makedirs(tmp_file_parent_path)
                     tmp_file_path = os.path.join(
-                      tmp_file_parent_path,
-                      ('%s.py' % distinfo_module),
+                        tmp_file_parent_path,
+                        ('%s.py' % distinfo_module),
                     )
                     self._write_distinfo_module(tmp_file_path, distinfo, imports)
                     sys.path.insert(0, tmp_dir_path)
                     try:
                         self._distinfo_compiled_files = byte_compile(
-                          [Module(
-                            name = self.distribution.distinfo_module,
-                            file = tmp_file_path,
-                          )],
-                          target_dir = self.collect_dir,
-                          optimize = self.optimize,
-                          force = 0,
-                          verbose = self.verbose,
-                          dry_run = self.dry_run,
+                            [Module(
+                                name=self.distribution.distinfo_module,
+                                file=tmp_file_path,
+                            )],
+                            target_dir=self.collect_dir,
+                            optimize=self.optimize,
+                            force=0,
+                            verbose=self.verbose,
+                            dry_run=self.dry_run,
                         )
                     finally:
                         del sys.path[0]
@@ -577,7 +588,7 @@ Distribution.distinfo_module = None
 
 
 def setup(*args, **kwargs):
-    cmdclass = kwargs.setdefault('cmdclass', {})
+    kwargs.setdefault('cmdclass', {})
     kwargs['cmdclass'].setdefault('test', test)
     kwargs['cmdclass'].setdefault('install_data', install_data)
     kwargs['cmdclass'].setdefault('install_lib', install_lib)

@@ -4,6 +4,13 @@ inotifyx Release Notes
 
 .. contents::
 
+pynotify 0.3.0 2017-11-02
+=========================
+
+ * Forked inotifyx to add python3 support.
+   (Joe Isca)
+
+
 
 inotifyx 0.2.2 2014-08-25
 =========================
