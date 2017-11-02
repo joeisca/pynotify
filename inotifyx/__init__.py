@@ -124,7 +124,7 @@ if __name__ == '__main__':
     import sys
 
     if len(sys.argv) == 1:
-        print >>sys.stderr, 'usage: inotify path [path ...]'
+        sys.stderr.write("usage: inotify path [path ...]\n")
         sys.exit(1)
 
     paths = sys.argv[1:]
@@ -146,7 +146,7 @@ if __name__ == '__main__':
                     parts = [event.get_mask_description()]
                     if event.name:
                         parts.append(event.name)
-                    print '%s: %s' % (path, ' '.join(parts))
+                    print('%s: %s' % (path, ' '.join(parts)))
         except KeyboardInterrupt:
             pass
 
