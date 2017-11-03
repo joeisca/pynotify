@@ -14,7 +14,8 @@ from setuptools import Extension
 setup(
     name='pynotifyx',
     version='.'.join(map(str, version)),
-    description='''
+    description='pynotifyx is a simple Python binding to the Linux inotify file system event monitoring API.',
+    long_description='''
 pynotifyx is a simple Python binding to the Linux inotify file system event
 monitoring API.
 
