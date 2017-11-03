@@ -3,3 +3,4 @@ PKG-INFO
 __pycache__
 __pycache__/*
 *.pyc
+pynotifyx.egg-info/*
