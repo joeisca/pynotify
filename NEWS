@@ -4,6 +4,25 @@ inotifyx Release Notes
 
 .. contents::
 
+pynotify 0.3.3 2017-11-03
+=========================
+
+ * Moved version reference to __init__ and moved __init__ functions to __main__.
+   (Joe Isca)
+
+
+pynotify 0.3.2 2017-11-02
+=========================
+
+ * Attempt to Fix unknown version problem.
+   (Joe Isca)
+
+pynotify 0.3.1 2017-11-02
+=========================
+
+ * Fix missing Manifest files.
+   (Joe Isca)
+
 pynotify 0.3.0 2017-11-02
 =========================
 
