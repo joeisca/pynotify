@@ -45,7 +45,7 @@ Visit https://github.com/joeisca/pynotifyx for more information.''',
     packages=['pynotifyx'],
     entry_points={
         "console_scripts": [
-            "pynotifyx=pynotifyx.__main__:main",
+            "pynotifyx=pynotifyx.__init__:main",
         ]
     },
     ext_modules=[
